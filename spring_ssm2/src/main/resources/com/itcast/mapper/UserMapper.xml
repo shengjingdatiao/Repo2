@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itcast.mapper.UserMapper">
+    <resultMap id="userMapper" type="user">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="gender" column="gender"/>
+        <result property="age" column="age"/>
+        <result property="adress" column="adress"/>
+        <result property="qq" column="qq"/>
+        <result property="email" column="email"/>
+        <association property="province" column="adress"
+            select="com.itcast.mapper.ProvinceMapper.findByCode">
+        </association>
+    </resultMap>
+    <select id="findAll" resultMap="userMapper" parameterType="user">
+        select * from users
+        <where>
+            <if test="name != null and name != ''">
+                and name like #{name}
+            </if>
+            <if test="email != null and email !=''">
+                and email like #{email}
+            </if>
+        </where>
+    </select>
+    <insert id="add" parameterType="user">
+        insert into users values (null,#{name},#{gender},#{age},#{adress},#{qq},#{email} )
+    </insert>
+    <delete id="delete" parameterType="int">
+        delete from users where id = #{id}
+    </delete>
+    <select id="findById" parameterType="int" resultType="user">
+        select * from users
+        <where>
+            <if test="id>0">
+                and id = #{id}
+            </if>
+        </where>
+    </select>
+    <update id="update" parameterType="user">
+        update
+               `day17`.`users`
+        set
+                `name` = #{name},
+                `gender` = #{gender},
+                `age` = #{age},
+                `adress` = #{adress},
+                `qq` = #{qq},
+                `email` = #{email}
+        where
+                 `id` = #{id};
+    </update>
+    <delete id="deleteSelect" parameterType="list">
+        delete from users where id
+        <foreach collection="array" open="in (" close=")" separator="," item="uid">
+            #{uid}
+        </foreach>
+    </delete>
+</mapper>
